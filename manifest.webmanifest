@@ -1,29 +1,39 @@
 {
+  "id": "./",
   "name": "Мисия: Зареди робота",
   "short_name": "Зареди робота",
   "description": "Игра за фокус, самоконтрол и точна реакция.",
   "lang": "bg",
-  "start_url": "./",
+  "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
   "orientation": "any",
   "background_color": "#0f172a",
   "theme_color": "#0f172a",
+  "categories": [
+    "education",
+    "games"
+  ],
+  "prefer_related_applications": false,
   "icons": [
     {
-      "src": "./icons/helper-192.png",
+      "src": "./icons/iskri-192-v4.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "./icons/helper-512.png",
+      "src": "./icons/iskri-512-v4.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "./icons/helper-maskable-512.png",
+      "src": "./icons/iskri-maskable-512-v4.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
