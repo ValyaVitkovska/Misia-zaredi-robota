@@ -1,4 +1,4 @@
-const CACHE='robot-focus-v4-1';
+const CACHE='robot-focus-v5-1';
 const FILES=[
   './',
   './index.html',
@@ -8,7 +8,8 @@ const FILES=[
   './icons/iskri-192-v4.png',
   './icons/iskri-512-v4.png',
   './icons/iskri-maskable-512-v4.png',
-  './assets/vbv-logo.png'
+  './assets/vbv-logo.png',
+  './assets/start-screen.png'
 ];
 
 self.addEventListener('install', event => {

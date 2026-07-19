@@ -246,12 +246,66 @@
       .robot{transform:scale(.70);margin:-25px 0}
       .signal-area{min-height:170px}
     }
+
+    .splash{
+      position:fixed;inset:0;z-index:60;display:none;place-items:center;
+      padding:max(12px,env(safe-area-inset-top,0px)) max(12px,env(safe-area-inset-right,0px))
+              max(12px,env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px));
+      background:
+        radial-gradient(circle at 50% 0%,rgba(56,189,248,.18),transparent 34%),
+        rgba(2,6,23,.96)
+    }
+    .splash.show{display:grid}
+    .splash-panel{
+      width:min(1180px,100%);max-height:calc(100vh - 24px);overflow:auto;
+      border-radius:26px;background:rgba(15,23,42,.92);
+      border:1px solid rgba(255,255,255,.14);box-shadow:0 24px 80px rgba(0,0,0,.48);
+      padding:clamp(10px,2vw,20px);text-align:center
+    }
+    .splash-image{
+      width:100%;max-height:min(68vh,760px);object-fit:contain;display:block;
+      border-radius:20px;background:#07111f
+    }
+    .splash-actions{
+      display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin:16px 0 2px
+    }
+    .splash-actions button{min-width:210px}
+    .splash-note{margin:10px auto 0;color:#94a3b8;font-size:14px}
+    @media(max-width:700px){
+      .splash{padding:8px}
+      .splash-panel{padding:8px;border-radius:20px}
+      .splash-image{max-height:64vh;border-radius:16px}
+      .splash-actions{display:grid;grid-template-columns:1fr;gap:9px;margin-top:10px}
+      .splash-actions button{width:100%;min-width:0}
+      .splash-note{font-size:12px}
+    }
+    @media(max-height:620px) and (orientation:landscape){
+      .splash-panel{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(230px,.65fr);gap:12px;align-items:center}
+      .splash-image{max-height:calc(100vh - 42px)}
+      .splash-side{padding:8px}
+      .splash-actions{display:grid}
+    }
+
     @media(prefers-reduced-motion:reduce){
       *,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}
     }
   </style>
 </head>
 <body>
+
+<div class="splash" id="splashScreen" role="dialog" aria-modal="true" aria-label="Начален екран">
+  <div class="splash-panel">
+    <img class="splash-image" src="./assets/start-screen.png" alt="Мисия: Зареди робота">
+    <div class="splash-side">
+      <div class="splash-actions">
+        <button class="primary" id="splashStart">Започни мисията</button>
+        <button class="secondary" id="splashSkip">Вече познавам играта</button>
+      </div>
+      <p class="splash-note">„Започни мисията“ отваря кратките инструкции на Искри.</p>
+    </div>
+  </div>
+</div>
+
 <div class="app">
   <header class="topbar glass">
     <div class="brand">
@@ -348,6 +402,7 @@
 <script>
 (() => {
   const $ = id => document.getElementById(id);
+  const splashScreen=$('splashScreen'), splashStart=$('splashStart'), splashSkip=$('splashSkip');
   const screen=$('screen'), energyCount=$('energyCount'), missionNo=$('missionNo'), levelNo=$('levelNo');
   const soundBtn=$('soundBtn'), settingsBtn=$('settingsBtn'), homeBtnTop=$('homeBtnTop'), guideBtn=$('guideBtn'), installBtn=$('installBtn');
   const playerPill=$('playerPill'), playerName=$('playerName');
@@ -422,6 +477,16 @@
   function reward(n=1){state.energy+=n;state.sessionSuccess+=n;updateTop();tone(660,.12);timers.push(setTimeout(()=>tone(880,.16),120))}
   function robotHTML(percent=0){return `<div class="robot-wrap"><div class="robot" aria-label="Робот"><div class="antenna"></div><div class="head"></div><div class="face"></div><div class="eyes"><div class="eye"></div><div class="eye"></div></div><div class="body"></div><div class="screen"><div class="battery" style="width:${percent}%"></div></div></div></div>`}
 
+
+
+  function openSplash(){
+    splashScreen.classList.add('show');
+    document.body.style.overflow='hidden';
+  }
+  function closeSplash(){
+    splashScreen.classList.remove('show');
+    document.body.style.overflow='';
+  }
 
   const guideSteps=[
     {
@@ -752,6 +817,18 @@
   settingsModal.onclick=e=>{if(e.target===settingsModal)settingsModal.classList.remove('show')};
 
 
+
+  splashStart.onclick=()=>{
+    closeSplash();
+    timers.push(setTimeout(()=>openGuide(0),180));
+  };
+  splashSkip.onclick=()=>{
+    closeSplash();
+    setHelper('Напиши или избери име, след това избери ниво.',true);
+    const input=$('nameInput');
+    if(input)timers.push(setTimeout(()=>input.focus(),120));
+  };
+
   guideBtn.onclick=()=>openGuide(0);
   prevGuide.onclick=()=>{if(guideIndex>0){guideIndex--;renderGuide()}};
   nextGuide.onclick=()=>{
@@ -792,7 +869,7 @@
   if('serviceWorker'in navigator&&(location.protocol==='https:'||location.hostname==='localhost')){
     window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}))
   }
-  updateTop();showIntro();timers.push(setTimeout(()=>openGuide(0),420))
+  updateTop();showIntro();timers.push(setTimeout(openSplash,180))
 })();
 </script>
 </body>
